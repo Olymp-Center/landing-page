@@ -1,0 +1,460 @@
+<!-- Draft version, will be updated later with real information -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Math Olympiad Map</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .puzzle-map {
+            position: relative;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            margin: 2rem auto;
+        }
+        .puzzle-piece {
+            width: 220px;
+            height: 220px;
+            position: relative;
+            margin: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .puzzle-piece:hover {
+            transform: translateY(-5px);
+        }
+        .piece-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .piece-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: brightness(1.2);
+            z-index: -1;
+            transform: scale(0.98);
+            border-radius: inherit;
+        }
+        .piece-8 .piece-content { 
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .piece-10 .piece-content { 
+            background: linear-gradient(135deg, #2196F3, #03A9F4);
+            box-shadow: 0 10px 20px rgba(33, 150, 243, 0.2);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .piece-12 .piece-content { 
+            background: linear-gradient(135deg, #9C27B0, #E91E63);
+            box-shadow: 0 10px 20px rgba(156, 39, 176, 0.2);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .piece-aime .piece-content { 
+            background: linear-gradient(135deg, #F44336, #FF5722);
+            box-shadow: 0 10px 20px rgba(244, 67, 54, 0.2);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .year-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 2;
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .piece-8 .year-label {
+            background: rgba(139, 195, 74, 0.95);
+            color: white;
+        }
+        .piece-10 .year-label {
+            background: rgba(3, 169, 244, 0.95);
+            color: white;
+        }
+        .piece-12 .year-label {
+            background: rgba(233, 30, 99, 0.95);
+            color: white;
+        }
+        .piece-aime .year-label {
+            background: rgba(255, 87, 34, 0.95);
+            color: white;
+        }
+        .puzzle-piece:hover .year-label {
+            transform: scale(1.1);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        .map-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            position: relative;
+        }
+        .piece-inner {
+            padding: 1.5rem;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        .puzzle-piece h4 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .puzzle-piece p {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+        }
+        .filter-button {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            background: white;
+            color: #666;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .filter-button:hover, .filter-button.active {
+            border-color: #007bff;
+            color: #007bff;
+            background: #f8f9fa;
+        }
+        .filter-button.reset {
+            background: #f8f9fa;
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        .filter-button.reset:hover {
+            background: #dc3545;
+            color: white;
+        }
+        .filter-button[data-year].active {
+            background: #007bff;
+            color: white;
+            border-color: #0056b3;
+        }
+        .filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        .search-box {
+            border-radius: 20px;
+            border: 2px solid #eee;
+            padding: 8px 20px;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.3s;
+        }
+        .search-box:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .puzzle-piece.hidden {
+            display: none;
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            width: 100%;
+            display: none;
+        }
+        .map-section::after {
+            content: '';
+            position: absolute;
+            bottom: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 2rem;
+            background: linear-gradient(to bottom, #ddd, transparent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center py-5">
+            <h1 class="display-4">AMC Math Olympiad Map</h1>
+            <p class="lead text-muted">Journey through mathematical challenges</p>
+        </div>
+
+        <div class="filter-bar">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <button class="filter-button active" data-type="all">All</button>
+                    <button class="filter-button" data-type="amc8">AMC 8</button>
+                    <button class="filter-button" data-type="amc10">AMC 10</button>
+                    <button class="filter-button" data-type="amc12">AMC 12</button>
+                    <button class="filter-button" data-type="aime">AIME</button>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="search-box" placeholder="Search by year...">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col d-flex align-items-center">
+                    <button class="filter-button" data-year="2024">2024</button>
+                    <button class="filter-button" data-year="2023">2023</button>
+                    <button class="filter-button" data-year="2022">2022</button>
+                    <button class="filter-button reset ms-3" id="resetYear">× Clear Year Filter</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="puzzle-map">
+            <div class="no-results">
+                <h3>No matches found</h3>
+                <p>Try adjusting your filters</p>
+            </div>
+
+            <!-- AMC 8 Section -->
+            <div class="map-section">
+                <a href="#" class="puzzle-piece piece-8" data-type="amc8" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 8</h4>
+                            <p>2024 A</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-8" data-type="amc8" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 8</h4>
+                            <p>2024 B</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- AMC 10 Section -->
+            <div class="map-section">
+                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 10</h4>
+                            <p>2024 A</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 10</h4>
+                            <p>2024 B</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2023">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 10</h4>
+                            <p>2023 A</p>
+                        </div>
+                        <span class="year-label">2023</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- AMC 12 Section -->
+            <div class="map-section">
+                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 12</h4>
+                            <p>2024 A</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 12</h4>
+                            <p>2024 B</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2023">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AMC 12</h4>
+                            <p>2023 A</p>
+                        </div>
+                        <span class="year-label">2023</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- AIME Section -->
+            <div class="map-section">
+                <a href="#" class="puzzle-piece piece-aime" data-type="aime" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AIME I</h4>
+                            <p>2024</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+                <a href="#" class="puzzle-piece piece-aime" data-type="aime" data-year="2024">
+                    <div class="piece-content">
+                        <div class="piece-inner">
+                            <h4>AIME II</h4>
+                            <p>2024</p>
+                        </div>
+                        <span class="year-label">2024</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const puzzlePieces = document.querySelectorAll('.puzzle-piece');
+            const filterButtons = document.querySelectorAll('.filter-button');
+            const searchBox = document.querySelector('.search-box');
+            const noResults = document.querySelector('.no-results');
+            const resetYearButton = document.getElementById('resetYear');
+
+            let currentType = 'all';
+            let currentYear = 'all';
+            let searchTerm = '';
+
+            function updateVisibility() {
+                let visibleCount = 0;
+                
+                puzzlePieces.forEach(piece => {
+                    const type = piece.dataset.type;
+                    const year = piece.dataset.year;
+                    const text = piece.textContent.toLowerCase();
+                    
+                    const typeMatch = currentType === 'all' || type === currentType;
+                    const yearMatch = currentYear === 'all' || year === currentYear;
+                    const searchMatch = searchTerm === '' || text.includes(searchTerm);
+                    
+                    if (typeMatch && yearMatch && searchMatch) {
+                        piece.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        piece.classList.add('hidden');
+                    }
+                });
+
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+                resetYearButton.style.display = currentYear === 'all' ? 'none' : 'inline-block';
+            }
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const year = this.dataset.year;
+
+                    // Skip if it's the reset button
+                    if (this.classList.contains('reset')) return;
+
+                    const isTypeButton = type !== undefined;
+                    const buttons = isTypeButton ? 
+                        document.querySelectorAll('.filter-button[data-type]') :
+                        document.querySelectorAll('.filter-button[data-year]');
+                    
+                    // If clicking an already active year filter, deactivate it
+                    if (!isTypeButton && this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        currentYear = 'all';
+                    } else {
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+
+                        if (isTypeButton) {
+                            currentType = type;
+                        } else {
+                            currentYear = year || 'all';
+                        }
+                    }
+
+                    updateVisibility();
+                });
+            });
+
+            // Reset Year Filter
+            resetYearButton.addEventListener('click', function() {
+                currentYear = 'all';
+                document.querySelectorAll('.filter-button[data-year]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                updateVisibility();
+            });
+
+            searchBox.addEventListener('input', function() {
+                searchTerm = this.value.toLowerCase();
+                updateVisibility();
+            });
+
+            // Handle clicking outside to remove year filter
+            document.addEventListener('click', function(event) {
+                const clickedElement = event.target;
+                const isYearButton = clickedElement.hasAttribute('data-year');
+                const isResetButton = clickedElement.classList.contains('reset');
+                
+                // If clicked outside year buttons and filter area
+                if (!isYearButton && !isResetButton && !clickedElement.closest('.filter-bar')) {
+                    currentYear = 'all';
+                    document.querySelectorAll('.filter-button[data-year]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    updateVisibility();
+                }
+            });
+
+            // Initial visibility update
+            updateVisibility();
+        });
+    </script>
+</body>
+</html>
