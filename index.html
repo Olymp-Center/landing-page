@@ -1,11 +1,11 @@
-<!-- Draft version, will be updated later with real information -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMC Math Olympiad Map</title>
+    <title>AMC Riyaziyyat Olimpiadası Xəritəsi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background: #f8f9fa;
@@ -13,22 +13,32 @@
         }
         .puzzle-map {
             position: relative;
-            padding: 2rem;
+            padding: 1rem;
             background: white;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             margin: 2rem auto;
         }
+        @media (min-width: 768px) {
+            .puzzle-map {
+                padding: 2rem;
+            }
+        }
         .puzzle-piece {
-            width: 220px;
             height: 220px;
             position: relative;
-            margin: 20px;
+            margin: 10px;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
         }
         .puzzle-piece:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .puzzle-piece:hover .piece-content {
+            border-color: rgba(255,255,255,0.5);
         }
         .piece-content {
             width: 100%;
@@ -42,132 +52,112 @@
             position: relative;
             border-radius: 12px;
             overflow: hidden;
-        }
-        .piece-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: inherit;
-            filter: brightness(1.2);
-            z-index: -1;
-            transform: scale(0.98);
-            border-radius: inherit;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            padding: 1rem;
         }
         .piece-8 .piece-content { 
             background: linear-gradient(135deg, #4CAF50, #8BC34A);
-            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2);
-            border: 3px solid rgba(255,255,255,0.2);
         }
         .piece-10 .piece-content { 
             background: linear-gradient(135deg, #2196F3, #03A9F4);
-            box-shadow: 0 10px 20px rgba(33, 150, 243, 0.2);
-            border: 3px solid rgba(255,255,255,0.2);
         }
         .piece-12 .piece-content { 
             background: linear-gradient(135deg, #9C27B0, #E91E63);
-            box-shadow: 0 10px 20px rgba(156, 39, 176, 0.2);
-            border: 3px solid rgba(255,255,255,0.2);
         }
         .piece-aime .piece-content { 
             background: linear-gradient(135deg, #F44336, #FF5722);
-            box-shadow: 0 10px 20px rgba(244, 67, 54, 0.2);
-            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .piece-unknown .piece-content { 
+            background: linear-gradient(135deg, #6c757d, #adb5bd);
+            cursor: default;
         }
         .year-label {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             color: #333;
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 0.9rem;
             font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             z-index: 2;
-            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .language-badges {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .language-badge {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
         }
-        .piece-8 .year-label {
-            background: rgba(139, 195, 74, 0.95);
-            color: white;
+        .puzzle-piece:hover .language-badge {
+            background: white;
+            transform: scale(1.05);
         }
-        .piece-10 .year-label {
-            background: rgba(3, 169, 244, 0.95);
-            color: white;
+        .link-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
         }
-        .piece-12 .year-label {
-            background: rgba(233, 30, 99, 0.95);
-            color: white;
-        }
-        .piece-aime .year-label {
-            background: rgba(255, 87, 34, 0.95);
-            color: white;
-        }
-        .puzzle-piece:hover .year-label {
-            transform: scale(1.1);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        .puzzle-piece:hover .link-indicator {
+            background: white;
+            transform: scale(1.05);
         }
         .map-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
             margin: 2rem 0;
             position: relative;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 2rem;
+        }
+        .map-section-title {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            padding-left: 20px;
+        }
+        .pieces-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin: -10px;
         }
         .piece-inner {
-            padding: 1.5rem;
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 1rem;
+            text-align: center;
             z-index: 1;
         }
-        .puzzle-piece h4 {
-            font-size: 2rem;
+        .piece-inner h4 {
+            font-size: 1.8rem;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: white;
         }
-        .puzzle-piece p {
+        .piece-inner p {
             font-size: 1.2rem;
             margin: 0;
-            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
         }
-        .filter-button {
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            background: white;
-            color: #666;
-            margin: 5px;
-            cursor: pointer;
-        }
-        .filter-button:hover, .filter-button.active {
-            border-color: #007bff;
-            color: #007bff;
-            background: #f8f9fa;
-        }
-        .filter-button.reset {
-            background: #f8f9fa;
-            border-color: #dc3545;
-            color: #dc3545;
-        }
-        .filter-button.reset:hover {
-            background: #dc3545;
-            color: white;
-        }
-        .filter-button[data-year].active {
-            background: #007bff;
-            color: white;
-            border-color: #0056b3;
+        .small-text {
+            font-size: 0.8rem;
+            color: #ffd700; /* Qızıl rəng üçün */
+            margin-top: 0.5rem;
         }
         .filter-bar {
             background: white;
@@ -175,6 +165,26 @@
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 2rem;
+        }
+        .filter-button {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid #eee;
+            transition: all 0.3s;
+            background: white;
+            color: #666;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .filter-button:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+        .filter-button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
         }
         .search-box {
             border-radius: 20px;
@@ -188,9 +198,6 @@
             border-color: #007bff;
             outline: none;
         }
-        .puzzle-piece.hidden {
-            display: none;
-        }
         .no-results {
             text-align: center;
             padding: 2rem;
@@ -198,166 +205,461 @@
             width: 100%;
             display: none;
         }
-        .map-section::after {
-            content: '';
-            position: absolute;
-            bottom: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 2rem;
-            background: linear-gradient(to bottom, #ddd, transparent);
+        @media (max-width: 768px) {
+            .filter-bar .row {
+                flex-direction: column;
+            }
+            .filter-bar .col-md-4 {
+                margin-top: 1rem;
+            }
+            .search-box {
+                max-width: 100%;
+            }
+        }
+        .language-modal {
+            animation: modalFadeIn 0.3s ease;
+        }
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -48%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="text-center py-5">
-            <h1 class="display-4">AMC Math Olympiad Map</h1>
-            <p class="lead text-muted">Journey through mathematical challenges</p>
+            <h1 class="display-4">AMC Riyaziyyat Olimpiadası Xəritəsi</h1>
+            <p class="lead text-muted">Riyazi çətinliklərdə səyahət</p>
         </div>
 
         <div class="filter-bar">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <button class="filter-button active" data-type="all">All</button>
+                    <button class="filter-button active" data-type="all">Hamısı</button>
                     <button class="filter-button" data-type="amc8">AMC 8</button>
                     <button class="filter-button" data-type="amc10">AMC 10</button>
                     <button class="filter-button" data-type="amc12">AMC 12</button>
                     <button class="filter-button" data-type="aime">AIME</button>
                 </div>
-                <div class="col-md-4">
-                    <input type="text" class="search-box" placeholder="Search by year...">
+                <div class="col-md-4 mt-3 mt-md-0">
+                    <input type="text" class="search-box" placeholder="İl üzrə axtarış...">
                 </div>
             </div>
             <div class="row mt-3">
-                <div class="col d-flex align-items-center">
+                <div class="col">
                     <button class="filter-button" data-year="2024">2024</button>
                     <button class="filter-button" data-year="2023">2023</button>
                     <button class="filter-button" data-year="2022">2022</button>
-                    <button class="filter-button reset ms-3" id="resetYear">× Clear Year Filter</button>
+                    <button class="filter-button reset ms-3" id="resetYear">× İl Filtrini Təmizlə</button>
                 </div>
             </div>
         </div>
 
-        <div class="puzzle-map">
+        <div class="puzzle-map" id="competitionMap">
             <div class="no-results">
-                <h3>No matches found</h3>
-                <p>Try adjusting your filters</p>
+                <h3>Uyğunluq tapılmadı</h3>
+                <p>Filtrlərinizi düzəldin</p>
             </div>
-
-            <!-- AMC 8 Section -->
-            <div class="map-section">
-                <a href="#" class="puzzle-piece piece-8" data-type="amc8" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 8</h4>
-                            <p>2024 A</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-8" data-type="amc8" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 8</h4>
-                            <p>2024 B</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-            </div>
-
-            <!-- AMC 10 Section -->
-            <div class="map-section">
-                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 10</h4>
-                            <p>2024 A</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 10</h4>
-                            <p>2024 B</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-10" data-type="amc10" data-year="2023">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 10</h4>
-                            <p>2023 A</p>
-                        </div>
-                        <span class="year-label">2023</span>
-                    </div>
-                </a>
-            </div>
-
-            <!-- AMC 12 Section -->
-            <div class="map-section">
-                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 12</h4>
-                            <p>2024 A</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 12</h4>
-                            <p>2024 B</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-12" data-type="amc12" data-year="2023">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AMC 12</h4>
-                            <p>2023 A</p>
-                        </div>
-                        <span class="year-label">2023</span>
-                    </div>
-                </a>
-            </div>
-
-            <!-- AIME Section -->
-            <div class="map-section">
-                <a href="#" class="puzzle-piece piece-aime" data-type="aime" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AIME I</h4>
-                            <p>2024</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-                <a href="#" class="puzzle-piece piece-aime" data-type="aime" data-year="2024">
-                    <div class="piece-content">
-                        <div class="piece-inner">
-                            <h4>AIME II</h4>
-                            <p>2024</p>
-                        </div>
-                        <span class="year-label">2024</span>
-                    </div>
-                </a>
-            </div>
+            <!-- Map place -->
         </div>
     </div>
 
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const puzzlePieces = document.querySelectorAll('.puzzle-piece');
-            const filterButtons = document.querySelectorAll('.filter-button');
+            const competitions = [
+                // 1 – “2023 - AMC 8 and AMC 10”
+                {
+                    year: "2023",
+                    type: ["amc8", "amc10"],
+                    title: "2023 - AMC 8 və AMC 10",
+                    languages: [
+                        { name: "az", url: "" } // Link is not accessible
+                    ]
+                },
+                // 2 – “AMC 8 2023”
+                {
+                    year: "2023",
+                    type: "amc8",
+                    title: "AMC 8 2023",
+                    languages: [
+                        { name: "az", url: "https://www.oxuyan.az/exams/Y8BPRN" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/TTBXTZ" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/UNE2HQ" }
+                    ]
+                },
+                // 3 – “AMC 10B 2024 November”
+                {
+                    year: "2024",
+                    type: "amc10",
+                    title: "AMC 10B 2024 Noyabr",
+                    languages: [
+                        { name: "az", url: "https://www.oxuyan.az/exams/1NXRV3" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/VMTUCH" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/D1MZPY" }
+                    ]
+                },
+                // 4 – “AMC 2022”
+                {
+                    year: "2022",
+                    type: "amc10",
+                    title: "AMC 2022",
+                    languages: [
+                        { name: "az", url: "https://www.oxuyan.az/exams/HCL2Z5" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/LUUCB9" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/QRAGUH" },
+                        { name: "az", url: "https://www.oxuyan.az/exams/MBVDTM" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/TQPLB1" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/NCT1AA" }
+                    ]
+                },
+                // 5 – “AMC 2023 - 12 Oktyabr 2023”
+                {
+                    year: "2023",
+                    type: ["amc8", "amc10"],
+                    title: "AMC 2023 - 12 Oktyabr 2023",
+                    languages: [
+                        { name: "az", url: "https://www.oxuyan.az/exams/NVMZ7X" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/1RMNXK" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/4NXD4T" },
+                        { name: "az", url: "https://www.oxuyan.az/exams/LKKCZ9" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/9JHTRG" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/DYDJQC" }
+                    ]
+                },
+                // 6 – “AMC sınaq”
+                {
+                    year: "sınaq",
+                    type: "amc8",
+                    title: "AMC Sınaq",
+                    languages: [
+                        { name: "az", url: "https://www.oxuyan.az/exams/YNH4BQ" }
+                    ]
+                },
+                // 7 - “AMC 8 {year}”
+                ...[2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 
+                   2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020].map(year => ({
+                    year: year.toString(),
+                    type: "amc8",
+                    title: `AMC 8 ${year}`,
+                    languages: [{
+                        name: "az",
+                        url: `https://www.oxuyan.az/exams/${getHistoricalExamCode(year)}`
+                    }]
+                })),
+                // 8 – “Bulk”
+                {
+                    year: "",
+                    type: "bulk",
+                    title: "Bulk - AMC Toplu Alış",
+                    languages: [
+                        { name: "az", url: "" } // Link is not accessible
+                    ]
+                },
+                // 9 – “Numune”
+                {
+                    year: "",
+                    type: "numune",
+                    title: "Numune - Ales",
+                    languages: [
+                        { name: "az", url: "" } // Link is not accessible
+                    ]
+                },
+                // 10 – “old – Riyaziyyat”
+                {
+                    year: "",
+                    type: ["amc8", "amc10", "amc12"],
+                    title: "old – Riyaziyyat",
+                    languages: [
+                        { name: "en", url: "https://www.oxuyan.az/exams/TE6LAQ" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/CDTBTT" },
+                        { name: "az", url: "https://www.oxuyan.az/exams/P3VHTC" },
+                        { name: "az", url: "https://www.oxuyan.az/exams/NLP67L" },
+                        { name: "en", url: "https://www.oxuyan.az/exams/9UQDL1" },
+                        { name: "ru", url: "https://www.oxuyan.az/exams/LTZED5" },
+                        { name: "en", url: "" }, // Link is not accessible
+                        { name: "en", url: "" }, // Link is not accessible
+                        { name: "en", url: "https://www.oxuyan.az/exams/QCVTVK" }
+                    ]
+                },
+                // 11 – “Summer Exams”
+                {
+                    year: "Yay",
+                    type: "amc8",
+                    title: "Summer Exams - AMC 8",
+                    languages: [
+                        { name: "az", url: "" }, // Link is not accessible
+                        { name: "en", url: "" }, // Link is not accessible
+                        { name: "az", url: "" }, // Link is not accessible
+                        { name: "en", url: "" }, // Link is not accessible
+                        { name: "en", url: "https://www.oxuyan.az/exams/Y6NY6K" },
+                        { name: "az", url: "https://www.oxuyan.az/exams/32MRUB" }
+                    ]
+                }
+            ];
+
+            function getHistoricalExamCode(year) {
+                const codes = {
+                    2000: 'P1NN11', 2001: 'AXAR1V', 2002: 'BL5DLA', 2003: 'AKCNKD',
+                    2004: 'HQT6V8', 2005: 'APEVDE', 2006: 'VLQJUN', 2007: 'CRM5H4',
+                    2008: 'P1A2KK', 2009: 'LBVHV6', 2010: 'KYNABL', 2011: 'TADAJY',
+                    2012: 'VA76HQ', 2013: 'JYGJ8V', 2014: 'JMHDZG', 2015: 'VTQ29P',
+                    2016: '32MA89', 2017: 'ZV8VHE', 2018: 'HBUQUP', 2019: 'ZD6LED',
+                    2020: 'CEUDMH'
+                };
+                return codes[year] || '';
+            }
+
+            function getPieceClass(type) {
+                switch(type) {
+                    case 'amc8':
+                        return '8';
+                    case 'amc10':
+                        return '10';
+                    case 'amc12':
+                        return '12';
+                    case 'aime':
+                        return 'aime';
+                    default:
+                        return 'unknown';
+                }
+            }
+
+            function createCompetitionElement(competition) {
+                const hasMultipleLanguages = competition.languages.length > 1;
+                const isClickable = competition.languages.some(lang => lang.url && lang.url !== "");
+                const hasValidLinks = competition.languages.every(lang => lang.url && lang.url !== "");
+
+                // Determine the main type for class assignment
+                const mainType = Array.isArray(competition.type) ? competition.type[0] : competition.type;
+                const typeClass = getPieceClass(mainType);
+
+                // Create the column
+                const col = document.createElement('div');
+                col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+
+                // Create the puzzle piece
+                const piece = document.createElement(hasMultipleLanguages ? 'div' : 'a');
+                piece.className = `puzzle-piece piece-${typeClass}`;
+                piece.dataset.type = Array.isArray(competition.type) ? competition.type.join(',') : competition.type;
+                piece.dataset.year = competition.year || 'all';
+
+                if (!hasMultipleLanguages && isClickable) {
+                    piece.href = competition.languages[0].url;
+                    piece.target = "_blank";
+                    piece.rel = "noopener noreferrer";
+                } else if (!isClickable) {
+                    piece.href = "#";
+                    piece.style.cursor = "default";
+                    piece.onclick = function(event) {
+                        event.preventDefault();
+                    };
+                }
+
+                // Assign additional class if not clickable
+                if (!isClickable) {
+                    piece.classList.add('piece-unknown');
+                }
+
+                // Piece Content
+                const content = document.createElement('div');
+                content.className = 'piece-content';
+
+                // Year Label
+                const yearLabel = document.createElement('span');
+                yearLabel.className = 'year-label';
+                yearLabel.textContent = competition.year || 'N/A';
+                content.appendChild(yearLabel);
+
+                // Inner Content
+                const inner = document.createElement('div');
+                inner.className = 'piece-inner';
+                const title = document.createElement('h4');
+                title.textContent = competition.title;
+                const typeText = document.createElement('p');
+                typeText.textContent = Array.isArray(competition.type) ? competition.type.join(', ').toUpperCase() : competition.type.toUpperCase();
+                inner.appendChild(title);
+                inner.appendChild(typeText);
+                content.appendChild(inner);
+
+                // Language Badges
+                const languageBadges = document.createElement('div');
+                languageBadges.className = 'language-badges';
+                competition.languages.forEach(lang => {
+                    languageBadges.innerHTML += `<span class="language-badge">${getLangLabel(lang.name)}</span>`;
+                });
+                content.appendChild(languageBadges);
+
+                // Link Indicator or "Link is not accessible"
+                const linkIndicator = document.createElement('div');
+                linkIndicator.className = 'link-indicator';
+                if (hasMultipleLanguages) {
+                    linkIndicator.innerHTML = `<i class="fas fa-language"></i> Dilləri Seç`;
+                } else if (isClickable) {
+                    linkIndicator.innerHTML = `<i class="fas fa-external-link-alt"></i> Aç`;
+                } else {
+                    linkIndicator.innerHTML = `<i class="fas fa-ban"></i> Link mövcud deyil`;
+                }
+                content.appendChild(linkIndicator);
+
+                piece.appendChild(content);
+                col.appendChild(piece);
+
+                // Add event listener for multiple languages
+                if (hasMultipleLanguages) {
+                    piece.addEventListener('click', () => {
+                        showLanguageOptions(competition);
+                    });
+                }
+
+                return col;
+            }
+
+            function showLanguageOptions(competition) {
+                const existingModal = document.querySelector('.language-modal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                const modal = document.createElement('div');
+                modal.className = 'language-modal';
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 15px;
+                    box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    min-width: 300px;
+                    max-width: 90vw;
+                `;
+
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 999;
+                `;
+
+                const content = `
+                    <h3 class="mb-4">${competition.title} - Dilləri Seç</h3>
+                    <div class="d-flex flex-column gap-3">
+                        ${competition.languages.map(lang => `
+                            ${lang.url && lang.url !== "" ? `
+                                <a href="${lang.url}" class="btn btn-outline-primary text-start" target="_blank">
+                                    <i class="fas fa-external-link-alt me-2"></i>
+                                    ${getLangLabel(lang.name)}
+                                </a>
+                            ` : `
+                                <div class="btn btn-outline-secondary text-start disabled">
+                                    <i class="fas fa-ban me-2"></i>
+                                    ${getLangLabel(lang.name)} (Link mövcud deyil)
+                                </div>
+                            `}
+                        `).join('')}
+                        <button class="btn btn-secondary mt-2">
+                            <i class="fas fa-times me-2"></i> Bağla
+                        </button>
+                    </div>
+                `;
+
+                modal.innerHTML = content;
+
+                // Close button functionality
+                const closeBtn = modal.querySelector('.btn-secondary');
+                closeBtn.onclick = () => {
+                    modal.remove();
+                    overlay.remove();
+                };
+
+                // Close on overlay click
+                overlay.onclick = () => {
+                    modal.remove();
+                    overlay.remove();
+                };
+
+                // Close on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        modal.remove();
+                        overlay.remove();
+                    }
+                }, { once: true });
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(modal);
+            }
+
+            function getLangLabel(code) {
+                const labels = {
+                    'az': 'Azərbaycan',
+                    'en': 'İngilis',
+                    'ru': 'Rus'
+                };
+                return labels[code] || code.toUpperCase();
+            }
+
+            function renderCompetitions() {
+                const map = document.getElementById('competitionMap');
+                
+                // Group competitions by year
+                const groupedCompetitions = {};
+                competitions.forEach(comp => {
+                    const year = comp.year || 'Digər';
+                    if (!groupedCompetitions[year]) {
+                        groupedCompetitions[year] = [];
+                    }
+                    groupedCompetitions[year].push(comp);
+                });
+
+                // Sort years, putting 'Digər' at the end
+                const sortedYears = Object.keys(groupedCompetitions).sort((a, b) => {
+                    if (a === 'Digər') return 1;
+                    if (b === 'Digər') return -1;
+                    return b - a;
+                });
+
+                // Clear existing content
+                map.innerHTML = '';
+
+                // Render sections by year
+                sortedYears.forEach(year => {
+                    const section = document.createElement('div');
+                    section.className = 'map-section';
+                    section.innerHTML = `
+                        <h2 class="map-section-title">${year}</h2>
+                        <div class="row pieces-container"></div>
+                    `;
+
+                    const container = section.querySelector('.pieces-container');
+                    groupedCompetitions[year].forEach(comp => {
+                        container.appendChild(createCompetitionElement(comp));
+                    });
+
+                    map.appendChild(section);
+                });
+            }
+
+            // Initialize the page
+            renderCompetitions();
+
+            // Filtering functionality
+            const filterButtons = document.querySelectorAll('.filter-button[data-type], .filter-button[data-year]');
             const searchBox = document.querySelector('.search-box');
             const noResults = document.querySelector('.no-results');
             const resetYearButton = document.getElementById('resetYear');
@@ -367,22 +669,30 @@
             let searchTerm = '';
 
             function updateVisibility() {
+                const pieces = document.querySelectorAll('.puzzle-piece');
                 let visibleCount = 0;
-                
-                puzzlePieces.forEach(piece => {
-                    const type = piece.dataset.type;
+
+                pieces.forEach(piece => {
+                    const types = piece.dataset.type.split(',');
                     const year = piece.dataset.year;
                     const text = piece.textContent.toLowerCase();
-                    
-                    const typeMatch = currentType === 'all' || type === currentType;
+
+                    const typeMatch = currentType === 'all' || types.includes(currentType);
                     const yearMatch = currentYear === 'all' || year === currentYear;
-                    const searchMatch = searchTerm === '' || text.includes(searchTerm);
-                    
+                    const searchMatch = !searchTerm || text.includes(searchTerm);
+
                     if (typeMatch && yearMatch && searchMatch) {
-                        piece.classList.remove('hidden');
+                        piece.parentElement.style.display = '';
                         visibleCount++;
                     } else {
-                        piece.classList.add('hidden');
+                        piece.parentElement.style.display = 'none';
+                    }
+
+                    // Hide empty sections
+                    const section = piece.closest('.map-section');
+                    if (section) {
+                        const visiblePieces = section.querySelectorAll('.puzzle-piece:not([style*="display: none"])');
+                        section.style.display = visiblePieces.length ? '' : 'none';
                     }
                 });
 
@@ -391,30 +701,24 @@
             }
 
             filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const type = this.dataset.type;
-                    const year = this.dataset.year;
+                button.addEventListener('click', () => {
+                    const type = button.dataset.type;
+                    const year = button.dataset.year;
 
-                    // Skip if it's the reset button
-                    if (this.classList.contains('reset')) return;
+                    if (type !== undefined) {
+                        currentType = type;
+                        document.querySelectorAll('.filter-button[data-type]').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                    }
 
-                    const isTypeButton = type !== undefined;
-                    const buttons = isTypeButton ? 
-                        document.querySelectorAll('.filter-button[data-type]') :
-                        document.querySelectorAll('.filter-button[data-year]');
-                    
-                    // If clicking an already active year filter, deactivate it
-                    if (!isTypeButton && this.classList.contains('active')) {
-                        this.classList.remove('active');
-                        currentYear = 'all';
-                    } else {
-                        buttons.forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-
-                        if (isTypeButton) {
-                            currentType = type;
+                    if (year !== undefined) {
+                        if (year === currentYear) {
+                            currentYear = 'all';
+                            button.classList.remove('active');
                         } else {
-                            currentYear = year || 'all';
+                            currentYear = year;
+                            document.querySelectorAll('.filter-button[data-year]').forEach(btn => btn.classList.remove('active'));
+                            button.classList.add('active');
                         }
                     }
 
@@ -425,31 +729,14 @@
             // Reset Year Filter
             resetYearButton.addEventListener('click', function() {
                 currentYear = 'all';
-                document.querySelectorAll('.filter-button[data-year]').forEach(btn => {
-                    btn.classList.remove('active');
-                });
+                document.querySelectorAll('.filter-button[data-year]').forEach(btn => btn.classList.remove('active'));
                 updateVisibility();
             });
 
-            searchBox.addEventListener('input', function() {
-                searchTerm = this.value.toLowerCase();
+            // Search functionality
+            searchBox.addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
                 updateVisibility();
-            });
-
-            // Handle clicking outside to remove year filter
-            document.addEventListener('click', function(event) {
-                const clickedElement = event.target;
-                const isYearButton = clickedElement.hasAttribute('data-year');
-                const isResetButton = clickedElement.classList.contains('reset');
-                
-                // If clicked outside year buttons and filter area
-                if (!isYearButton && !isResetButton && !clickedElement.closest('.filter-bar')) {
-                    currentYear = 'all';
-                    document.querySelectorAll('.filter-button[data-year]').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    updateVisibility();
-                }
             });
 
             // Initial visibility update
