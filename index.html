@@ -333,15 +333,6 @@
                         { name: "ru", url: "https://www.oxuyan.az/exams/DYDJQC" }
                     ]
                 },
-                // 6 – “AMC sınaq”
-                {
-                    year: "sınaq",
-                    type: "amc8",
-                    title: "AMC Sınaq",
-                    languages: [
-                        { name: "az", url: "https://www.oxuyan.az/exams/YNH4BQ" }
-                    ]
-                },
                 // 7 - “AMC 8 {year}”
                 ...[2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 
                    2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020].map(year => ({
@@ -353,55 +344,6 @@
                         url: `https://www.oxuyan.az/exams/${getHistoricalExamCode(year)}`
                     }]
                 })),
-                // 8 – “Bulk”
-                {
-                    year: "",
-                    type: "bulk",
-                    title: "Bulk - AMC Toplu Alış",
-                    languages: [
-                        { name: "az", url: "" } // Link is not accessible
-                    ]
-                },
-                // 9 – “Numune”
-                {
-                    year: "",
-                    type: "numune",
-                    title: "Numune - Ales",
-                    languages: [
-                        { name: "az", url: "" } // Link is not accessible
-                    ]
-                },
-                // 10 – “old – Riyaziyyat”
-                {
-                    year: "",
-                    type: ["amc8", "amc10", "amc12"],
-                    title: "old – Riyaziyyat",
-                    languages: [
-                        { name: "en", url: "https://www.oxuyan.az/exams/TE6LAQ" },
-                        { name: "ru", url: "https://www.oxuyan.az/exams/CDTBTT" },
-                        { name: "az", url: "https://www.oxuyan.az/exams/P3VHTC" },
-                        { name: "az", url: "https://www.oxuyan.az/exams/NLP67L" },
-                        { name: "en", url: "https://www.oxuyan.az/exams/9UQDL1" },
-                        { name: "ru", url: "https://www.oxuyan.az/exams/LTZED5" },
-                        { name: "en", url: "" }, // Link is not accessible
-                        { name: "en", url: "" }, // Link is not accessible
-                        { name: "en", url: "https://www.oxuyan.az/exams/QCVTVK" }
-                    ]
-                },
-                // 11 – “Summer Exams”
-                {
-                    year: "Yay",
-                    type: "amc8",
-                    title: "Summer Exams - AMC 8",
-                    languages: [
-                        { name: "az", url: "" }, // Link is not accessible
-                        { name: "en", url: "" }, // Link is not accessible
-                        { name: "az", url: "" }, // Link is not accessible
-                        { name: "en", url: "" }, // Link is not accessible
-                        { name: "en", url: "https://www.oxuyan.az/exams/Y6NY6K" },
-                        { name: "az", url: "https://www.oxuyan.az/exams/32MRUB" }
-                    ]
-                }
             ];
 
             function getHistoricalExamCode(year) {
